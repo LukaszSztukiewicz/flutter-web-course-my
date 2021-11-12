@@ -4,7 +4,7 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
  class MyApp extends StatelessWidget {
    const MyApp({Key? key}) : super(key: key);
@@ -27,7 +27,7 @@ void main() {
          }),
          primaryColor: Colors.blue,
        ),
-       home: const SiteLayout(),
+       home: SiteLayout(),
      );
    }
  }

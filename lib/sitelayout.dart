@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutterwebcourse/constants/style.dart';
 import 'package:flutterwebcourse/helpers/responsivness.dart';
 import 'package:flutterwebcourse/large_screen.dart';
 import 'package:flutterwebcourse/small_screen.dart';
+import 'package:flutterwebcourse/widget/top_nav.dart';
 
 class SiteLayout extends StatelessWidget {
-  const SiteLayout({Key? key}) : super(key: key);
+  SiteLayout({Key? key}) : super(key: key);
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  //final  scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-      ),
+      key: scaffoldKey,
+      drawer: Drawer(child: Container(color: Colors.redAccent,)),
+      appBar: topNavigationBar(context, scaffoldKey),
       body: ResponsiveWidget(
         largeScreen: LargeScreen(),
         smallScreen: SmallScreen(),
@@ -22,6 +25,8 @@ class SiteLayout extends StatelessWidget {
     );
   }
 }
+
+
 
 class MediumScreen extends StatelessWidget {
   const MediumScreen({Key? key}) : super(key: key);
