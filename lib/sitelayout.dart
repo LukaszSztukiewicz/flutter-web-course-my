@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutterwebcourse/constants/style.dart';
 import 'package:flutterwebcourse/helpers/responsivness.dart';
 import 'package:flutterwebcourse/large_screen.dart';
 import 'package:flutterwebcourse/small_screen.dart';
@@ -19,7 +18,6 @@ class SiteLayout extends StatelessWidget {
       body: ResponsiveWidget(
         largeScreen: LargeScreen(),
         smallScreen: SmallScreen(),
-        customScreen: CustomScreen(),
         mediumScreen: MediumScreen(),
       ),
     );

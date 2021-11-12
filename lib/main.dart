@@ -13,6 +13,9 @@ void main() {
    Widget build(BuildContext context) {
      return GetMaterialApp(
        debugShowCheckedModeBanner: false,
+       initialRoute: "/",
+       getPages: [],
+       onUnknownRoute: "/",
        title: "Dash",
        theme: ThemeData(
          scaffoldBackgroundColor: Colors.white,
