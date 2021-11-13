@@ -1,3 +1,222 @@
+//USE GET CLI
+
 GetMaterialApp
 
 Get.snackbar("Title", "Message", snackPosition: SnackPosition.BOTTOM)
+Get.defaultDialog()
+
+Get.bottomSheet(
+          Container(
+            child: Wrap(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.wb_sunny),
+                  title: Text("LightTheme"),
+                  onTap: () => {Get.changeTheme(ThemeData.light())},
+                ),
+                 ListTile(
+                  leading: Icon(Icons.wb_sunny_outlined),
+                  title: Text("DarkTheme"),
+                  onTap: () => {Get.changeTheme(ThemeData.dark())},
+                ),
+              ],
+            ),
+          ),
+          barrierColor: Colors.deepOrange.shade400
+        ),
+
+//naviagtion
+Get.to(SmallScreen()) // home/SmallScreen
+Get.back() 
+Get.off(Home()) //no option of going back - cancel screen
+Get.offAll(Home()) //cancel all previous screens
+
+Get.toNamed("/home")//refers to where getPages is specified
+
+//naviagtion with passing data
+OnPressed: () async {var dataFromSmallScreen = await Get.to(SmallScreen(), arguments: "some data")}
+Get.back(result: "data") 
+    Text("${Get.arguments}")
+
+Get.toNamed("/home?param1=someMessage")
+Text("${Get.parameters[param1]})
+
+GetPage(name: '/overview/:someValue' page: () => OverviewPage)
+Get.toNamed("/overview/1234")
+Text("${Get.parameters['someValue']})
+
+//stateManagement
+All wigets that uses this variable must update itself - reactive variable (Reactive(Rx))
+
+----GetBuilder
+When maintaining ephemeral state. Which basically means use it wherever you would use setState.
+If performance is the top most priority. State is shared among builders and much RAM is not consumed.
+If you don’t want to work with streams.
+---GetX
+When you want the power of reactive programming.
+It redraws the widget only when the value of variable is actually changed. Say value of variable is changed from "Garg" to "Garg", then widgets will not be redrawn.
+If you don’t want to instantiate controllers.
+----Obx
+If you prefer a simple syntax.
+If you’ll be using with multiple controllers in the same widget. Obx doesn't need a type, so it can be used with any number of controllers.
+
+---GetBuilder
+GetBuilder essentially replaces the StatefulWidget. You can keep all the pages Stateless and wrap specific widgets in GetBuilder.
+
+class MyController extends GetxController {
+	
+  @override
+  void onInit() { // called immediately after the widget is allocated memory
+    fetchApi();
+    super.onInit();
+  }
+
+  @override
+  void onReady() { // called after the widget is rendered on screen
+    showIntroDialog();
+    super.onReady();
+  }
+
+  @override
+  void onClose() { // called just before the Controller is deleted from memory
+    closeStream();
+    super.onClose();
+  }
+
+}
+
+GetBuilder<MyController>( // specify type as Controller
+  init: MyController(), // intialize with the Controller
+  builder: (value) => Text(
+    '${value.counter}', // value is an instance of Controller.
+  ),
+),
+
+GetBuilder<MyController>( // no need to initialize Controller ever again, just mention the type
+  builder: (value) => Text(
+    '${value.counter}', // counter is updated when increment() is called
+  ),
+),
+---GetX
+GetBuilder is fast and has low memory footprint, but, it's not reactive(asynchronus updates). This means we'll be missing out on the power of streams.
+class MyController extends GetxController {
+    var student = Student()
+    void someFunc() async {
+        await Future<int>.delayed(Duration(seconds: 4))
+        student.name.value = student.name.value.upperCase() 
+        update() //in case Student is not observable
+    }
+}
+GetX<MyController>(
+  init: MyController(),
+  builder: (val) => Text(
+    '${val.counter.value}',
+  ),
+),
+
+
+class Student{
+    final String name = "init".obs;
+    Student(this.name);
+}
+student.name.value = student.name.value.upperCase() //calls change
+
+final student = Student(name:"Tom").obs
+student.update(student){student.name.value = student.name.value.upperCase() } //if entire class is observable
+
+Wrap widget with Obx(()=>)
+final name = RxString('')
+final value = value1.obs
+final balance = Rx<Double>(0.0)
+
+//spearate Buisness Logic and UI
+class Student{
+    final String name = "init".obs;
+    Student(this.name);
+
+    void toUpperCase(){
+        this.student.name.value.upperCase()
+    }
+}
+
+class MyController2 extends GetxController {
+    var student = Student()
+    void someFunc(){
+        student.name.value = student.name.value.upperCase() 
+        update() //in case Student is not observable
+    }
+}
+//if init property is not used u can create controller like this: (put- singelton - only one instance can be created)
+MyController2 myController2 = Get.put(MyController2(), tag:"instance1", permanent: true) //permanent no dispose (alternatively fenix:true - it will recreate) and u can Get.find<MyController>(tag: "instance1")
+Get.lazyPut(), Get.putAsync<MyController(()  async => await MyController())
+Get.create() // isSingeltion:false and permanent: true
+myController2.student.name
+Get.find<MyController2>().someFunc()
+
+//Unique ID
+GetX<MyController>(
+  id: "id2"
+  init: MyController(),
+  builder: (controller) => Text(
+    '${contorller.value}',
+  ),
+),
+update(["id2"])
+
+//workers
+@override
+void onInit{
+ever(count, ()=> print(count))
+everAll([count, count2] , ()=> print(count))
+once(count, ()=> print(count)
+debounce(count, ()=> funcFetchData(), duration: Duration(seconds: 1))  //server requests in particular searching, default 800 miliseconds
+interval(count, ()=> funcFetchData(), duration: Duration(seconds: 1))  //ignores all changes within one seond and then call
+super.onInit()
+}
+
+//implementing Internationalization
+in GetMaterialApp locale and fallbackLocale
+'hello'.tr
+Get.updateLocale(Locale('en', 'US'))
+Get.deviceLocale(Locale('en', 'US'))
+
+//GetxService is simple GetxController but permanent
+//Binding
+GetMaterialApp initialBinding: AllControllerBinding() //own class implements Binding
+GetPage(binding: AllControllerBinding())
+
+//SmartManagement
+.full //dispose all
+.keepFactory //recreating controllers
+.onlyBuilder //only lazy will be disposed
+
+//get storage 
+GetStorage is not a database!
+---When to use GetStorage: 
+simple Maps storage.
+cache of http requests
+storage of simple user information.
+simple and persistent state storage
+any situation you currently use sharedPreferences.
+----When not to use GetStorage: 
+you need indexes.
+when you need to always check if the file was written to the storage disk before starting another operation (storage in memory is done instantly and can be read instantly with box.read(), and the backup to disk is done in the background. To make sure the backup is complete, you can use await, but if you need to call await all the time, it makes no sense you are using memory storage).
+
+dependency get_storage
+in main GetStorage.init();
+var storage = GetStorage();
+storage.write('email', emailEditingController.text)
+storage.read('email')
+
+var listen = storage.listen(() => print('storage changed') )
+storage.removeListen(listen)
+
+var listen = storage.listenKey('email', (value) => print('key changed to $value') )
+storage.remove('email')
+storage.erase()
+//email validation
+GetUtils.isEmail(emailEditingController.text))
+
+//FetchingData
+http://makeup-api.herokuapp.com/api/v1/products.json?brand=maybelline
+

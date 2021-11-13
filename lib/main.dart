@@ -3,6 +3,8 @@ import 'package:flutterwebcourse/sitelayout.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'large_screen.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -13,10 +15,15 @@ void main() {
    Widget build(BuildContext context) {
      return GetMaterialApp(
        debugShowCheckedModeBanner: false,
+       locale: Locale('en', 'US'),
+       fallbackLocale: Locale('en', 'US'),
        initialRoute: "/",
-       getPages: [],
-       onUnknownRoute: "/",
-       title: "Dash",
+       getPages: [
+         GetPage(name: '/', page: ()=> LargeScreen())
+       ],
+       //onUnknownRoute: "/",
+       title: "MyCustomTitle",
+       defaultTransition: Transition.fade,
        theme: ThemeData(
          scaffoldBackgroundColor: Colors.white,
          textTheme: GoogleFonts.mulishTextTheme(
